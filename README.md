@@ -1,7 +1,7 @@
 # Site do treinamento (acesso pela web)
 
 Página web estática, em português, com todo o material: cronograma, setup,
-os 3 módulos com código copiável, checkpoints interativos e quizzes.
+os 3 módulos com código copiável e checkpoints interativos.
 
 ## Acessar localmente
 

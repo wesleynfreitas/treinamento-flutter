@@ -55,11 +55,6 @@
   .checkpoint label{display:block;cursor:pointer;padding:.15rem 0}
   .checkpoint input{accent-color:var(--verde);width:1.05rem;height:1.05rem;vertical-align:-2px}
   .progresso{font-size:.85rem;color:var(--suave)}
-  /* Quiz */
-  details{border:1px solid var(--borda);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0;background:#fff}
-  summary{cursor:pointer;font-weight:600}
-  details[open ] summary{color:var(--roxo-escuro)}
-  details p{margin:.6rem 0 .2rem}
   footer{text-align:center;color:var(--suave);padding:2rem 1rem;font-size:.9rem}
   @media print{nav,.copiar,.botao{display:none}section{break-inside:avoid;border:none}body{background:#fff}}
 </style>
@@ -110,8 +105,8 @@
     <div class="cartao-modulo">
       <span class="tempo">40 min</span>
       <h3>2 · Gerenciamento de Estado</h3>
-      <p>De <code>setState</code> a <code>ChangeNotifier</code>: adicionar, concluir e remover tarefas
-         com o estado morando fora da tela, num <code>TaskController</code>.</p>
+      <p><code>Stateless</code> × <code>Stateful</code> e o state interno do widget — e de
+         <code>setState</code> a <code>ChangeNotifier</code>, quando ele deve ir para um <code>TaskController</code>.</p>
       <a href="#modulo2">Ir ao módulo →</a>
     </div>
     <div class="cartao-modulo">
@@ -189,7 +184,7 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
     <tr><td>5–12</td><td>As 4 camadas</td><td>Árvore alvo (abaixo) e a regra: sem <code>BuildContext</code> no model</td></tr>
     <tr><td>12–30</td><td><strong>Prática · organização guiada</strong></td><td>Mover classe a classe (4 passos), rodando o app a cada passo</td></tr>
     <tr><td>30–37</td><td>Leitura do mapa</td><td>“Onde entra o estado?” <code>state/</code> · “Onde entra a API?” <code>data/</code></td></tr>
-    <tr><td>37–40</td><td>Checkpoint + quiz</td><td><code>flutter analyze</code> e perguntas rápidas</td></tr>
+    <tr><td>37–40</td><td>Checkpoint</td><td><code>flutter analyze</code> e conferência do checkpoint</td></tr>
   </table>
 
   <h3>A árvore alvo</h3>
@@ -236,42 +231,68 @@ class Task {
     <label><input type="checkbox" data-check="arq4"> O app lista as 3 tarefas, igual ao starter por fora · <code>flutter analyze</code> limpo</label>
   </div>
 
-  <h3>Quiz rápido</h3>
-  <details><summary>1. Amanhã as tarefas vêm de uma API. Quais arquivos mudam?</summary>
-    <p>Só a camada <code>data/</code> — é o Módulo 3, e a UI nem fica sabendo.</p></details>
-  <details><summary>2. O <code>TaskTile</code> pode buscar dados no repository?</summary>
-    <p>Não — <code>dumb widget</code> recebe dados e callbacks. Quem conhece a fonte é a página (e, no Módulo 2, o controller).</p></details>
-  <details><summary>3. Por que <code>models/</code> não importa Flutter?</summary>
-    <p>Model é conceito do domínio: sem Flutter ele é testável, reutilizável e não quebra quando a UI muda.</p></details>
 </section>
 
 <!-- ============ MÓDULO 2 ============ -->
 <section id="modulo2">
   <h2>Módulo 2 · Gerenciamento de Estado <span class="tempo">40 min</span></h2>
-  <p><strong>Objetivo:</strong> fazer o app reagir — adicionar, concluir e remover tarefas — e entender <em>onde</em> o estado deve morar.<br>
-     <strong>Resultado:</strong> app de tarefas <strong>funcionando</strong>, com o estado num <code>TaskController</code> fora da tela.</p>
+  <p><strong>Objetivo:</strong> distinguir <code>StatelessWidget</code> de <code>StatefulWidget</code>, entender o <strong>state interno do widget</strong> (<code>State</code> + <code>setState</code>) e saber quando ele deve sair do widget e ir para um controller.<br>
+     <strong>Resultado:</strong> app de tarefas <strong>funcionando</strong> — state local onde ele basta, e o estado da feature num <code>TaskController</code> fora da tela.</p>
 
   <div class="ideia"><strong>A ideia central:</strong> UI = função do estado.
     A única pergunta aqui é: <strong>quem é o dono do estado?</strong>
     A pasta <code>state/</code>, vazia desde o Módulo 1, ganha seu morador:
     tela lendo a fonte direto → <code>setState</code> na tela → controller fora da tela.</div>
 
+  <h3><code>StatelessWidget</code> × <code>StatefulWidget</code> — o state interno</h3>
+  <p>Antes do estado do app, existe o estado que <strong>nasce e morre dentro de um widget</strong>:</p>
+  <table>
+    <tr><th></th><th><code>StatelessWidget</code></th><th><code>StatefulWidget</code></th></tr>
+    <tr><td>State interno mutável?</td><td><strong>Não</strong></td><td><strong>Sim</strong>, no objeto <code>State</code></td></tr>
+    <tr><td>Mostra o quê?</td><td>Só os parâmetros (<code>final</code>, imutáveis) que recebe</td><td>Parâmetros <strong>+</strong> fields do <code>State</code></td></tr>
+    <tr><td><code>build()</code> roda de novo quando…</td><td>O pai reconstrói com nova configuração</td><td>O pai reconstrói <strong>ou</strong> ele chama <code>setState()</code></td></tr>
+    <tr><td>No app</td><td><code>TaskTile</code>, <code>EmptyState</code></td><td><code>TasksPage</code>, <code>AddTaskDialog</code></td></tr>
+  </table>
+  <div class="bloco"><pre><code>TasksPage (widget, imutável) ──createState()──▶ _TasksPageState (State, mutável)
+   ↑ recriado a cada rebuild do pai               ↑ sobrevive aos rebuilds
+   fields: só configuração (final)                  fields: o state interno</code></pre></div>
+  <p><strong>Ciclo de vida:</strong> <code>createState()</code> → <code>initState()</code> (crie controllers e subscriptions)
+     → <code>build()</code> (puro, sem <code>side effects</code>) → <code>didUpdateWidget()</code> (nova configuração, mesmo <code>State</code>)
+     → <code>dispose()</code> (libere tudo; depois daqui, <code>setState()</code> é erro).
+     O <code>State</code> é preservado enquanto o widget estiver na mesma posição da <code>widget tree</code> (mesmo tipo e mesma <code>Key</code>) —
+     por isso itens de lista com state precisam de <code>ValueKey(task.id)</code>.</p>
+  <div class="ideia"><strong>Dois níveis de estado:</strong><br>
+    <strong>Interno do widget</strong> (<code>setState</code>): local, efêmero, morre com ele — filtro ligado/desligado, texto digitado, aba selecionada.<br>
+    <strong>Da feature</strong> (<code>TaskController</code>): compartilhado, testável, sobrevive à troca de tela — lista de tarefas, contador, <code>loading</code>/<code>error</code>.<br>
+    <strong>Regra prática:</strong> não muda → <code>Stateless</code> · muda e só este widget usa → <code>Stateful</code> · mais de um usa ou é dado/regra → controller.</div>
+  <p>Repare: no app final, <code>TasksPage</code> é <code>Stateful</code> <strong>não</strong> porque a lista é state interno dela —
+     a lista é do controller. Ela é <code>Stateful</code> para <strong>criar o controller no <code>initState()</code> e descartá-lo no <code>dispose()</code></strong>:
+     o <code>State</code> hospeda o ciclo de vida, e o <code>ListenableBuilder</code> reconstrói a UI quando o controller avisa.</p>
+
   <h3>Roteiro</h3>
   <table>
     <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
     <tr><td>0–5</td><td>O problema</td><td>Apertar o botão <code>+</code> não faz nada. Falta um dono do estado</td></tr>
-    <tr><td>5–15</td><td><strong>Prática 1 · <code>setState</code></strong></td><td>Tocar risca a tarefa — funciona, mas o estado fica preso à tela</td></tr>
-    <tr><td>15–20</td><td>A dor</td><td>“E se outra tela precisar desta lista?” Estado preso não escala</td></tr>
-    <tr><td>20–35</td><td><strong>Prática 2 · <code>ChangeNotifier</code></strong></td><td>Criar o <code>TaskController</code> em <code>state/</code></td></tr>
-    <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Adicionar, concluir, remover — tudo funcionando</td></tr>
+    <tr><td>5–12</td><td><code>Stateless</code> × <code>Stateful</code></td><td>Widget × <code>State</code>, ciclo de vida e <code>setState()</code> como gatilho</td></tr>
+    <tr><td>12–20</td><td><strong>Prática 1 · state interno</strong></td><td>Filtro “mostrar concluídas” com <code>setState</code> — funciona, mas fica preso à tela</td></tr>
+    <tr><td>20–24</td><td>A dor</td><td>“E se outra tela precisar desta lista?” State interno não compartilha</td></tr>
+    <tr><td>24–37</td><td><strong>Prática 2 · <code>ChangeNotifier</code></strong></td><td>Criar o <code>TaskController</code> em <code>state/</code></td></tr>
+    <tr><td>37–40</td><td>Checkpoint</td><td>Adicionar, concluir, remover — tudo funcionando</td></tr>
   </table>
 
-  <h3>Prática 1 — <code>setState</code>, o jeito rápido (para sentir o problema)</h3>
-  <p>Na tela (<code>StatefulWidget</code>), o toque numa tarefa alterna um <code>state</code> local e chama <code>setState</code>:</p>
-  <div class="bloco"><pre><code>onTap: () =&gt; setState(() =&gt; _concluidasLocalmente.add(task.id))</code></pre></div>
-  <p>Funciona — mas esse estado morreu dentro da tela: contador, outra tela e testes não enxergam nada. É essa dor que a Prática 2 resolve.</p>
+  <h3>Prática 1 — state interno com <code>setState</code>, o jeito rápido (para sentir o problema)</h3>
+  <p>A tela vira <code>StatefulWidget</code> e ganha um filtro no <code>State</code>:</p>
+  <div class="bloco"><pre><code>bool _mostrarConcluidas = true; // state interno: só esta tela usa, morre com ela
+
+Switch(
+  value: _mostrarConcluidas,
+  onChanged: (valor) =&gt; setState(() =&gt; _mostrarConcluidas = valor),
+)</code></pre></div>
+  <p>Observe: o field vive no <code>State</code>, não no widget. <strong>Hot Reload</strong> mantém o filtro; <strong>Hot Restart</strong> volta ao valor inicial.
+     Funciona — mas esse estado morreu dentro da tela: outra tela e os testes não enxergam nada. É essa dor que a Prática 2 resolve.</p>
   <div class="ideia"><strong>Frase para gravar:</strong> “<code>setState</code> não desenha nada.
-    Ele só avisa: <em>mudou — roda o <code>build()</code> de novo</em>.”</div>
+    Ele executa a mudança, marca o widget como <em>dirty</em> e agenda o <code>build()</code> de novo no próximo frame.
+    E ele só alcança o state interno deste widget — por isso a Prática 2 existe.”</div>
 
   <h3>Prática 2 — o controller em <code>state/</code>, o jeito que escala</h3>
   <div class="bloco"><pre><code>class TaskController extends ChangeNotifier {
@@ -311,19 +332,12 @@ class Task {
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 2</h3>
     <label><input type="checkbox" data-check="m2a"> O botão <code>+</code> adiciona e a tarefa aparece na hora, sem reiniciar</label>
+    <label><input type="checkbox" data-check="m2e"> Sei dizer, para cada widget do app, se ele é <code>Stateless</code> ou <code>Stateful</code> — e por quê</label>
+    <label><input type="checkbox" data-check="m2f"> O filtro é state interno (<code>setState</code>); a lista de tarefas, não</label>
     <label><input type="checkbox" data-check="m2b"> Tocar/remover uma tarefa atualiza a lista</label>
     <label><input type="checkbox" data-check="m2c"> A lista mora no <code>TaskController</code>, não na tela</label>
     <label><input type="checkbox" data-check="m2d"> Toda mudança chama <code>notifyListeners()</code> · <code>flutter analyze</code> limpo</label>
   </div>
-
-  <h3>Quiz rápido</h3>
-  <details><summary>1. Esqueci o <code>notifyListeners()</code>. O que acontece?</summary>
-    <p>O dado muda, mas a UI não: o <code>build()</code> nunca roda de novo.</p></details>
-  <details><summary>2. <code>setState</code> é errado?</summary>
-    <p>Não! É o certo para estado <strong>local e passageiro</strong> (aba selecionada, campo aberto).
-      Estado da funcionalidade e dos dados vai para o controller.</p></details>
-  <details><summary>3. Por que <code>List.unmodifiable</code> ao expor a lista?</summary>
-    <p>Para ninguém burlar o controller e mudar a lista sem avisar a UI.</p></details>
 
   <h3>Erros comuns</h3>
   <table>
@@ -351,7 +365,7 @@ class Task {
     <tr><td>5–12</td><td><code>Future</code> e <code>async/await</code></td><td>Valor que chega depois, sem travar a UI · <code>try/catch</code></td></tr>
     <tr><td>12–25</td><td><strong>Prática 1 · API em <code>data/</code></strong></td><td><code>flutter pub add http</code>, <code>Task.fromJson</code>, <code>ApiTaskRepository</code></td></tr>
     <tr><td>25–35</td><td><strong>Prática 2 · os 3 <code>states</code></strong></td><td><code>isLoading</code>/<code>errorMessage</code> no controller; spinner, erro ou lista na tela</td></tr>
-    <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Cortar a rede e ver o erro bonito · <code>flutter analyze</code></td></tr>
+    <tr><td>35–40</td><td>Checkpoint</td><td>Cortar a rede e ver o erro bonito · <code>flutter analyze</code></td></tr>
   </table>
 
   <h3>A API do treinamento</h3>
@@ -420,14 +434,6 @@ return /* a mesma lista do Módulo 2 */;                       // success</code>
     <label><input type="checkbox" data-check="api4"> <code>TaskTile</code>, formulário e contador não mudaram desde o Módulo 2</label>
     <label><input type="checkbox" data-check="api5"> <code>flutter analyze</code> limpo 🎉</label>
   </div>
-
-  <h3>Quiz rápido</h3>
-  <details><summary>1. Por que não buscar a API direto no <code>build()</code>?</summary>
-    <p><code>build()</code> roda toda hora e não é lugar de <code>side effect</code>. Busca-se uma vez e o resultado vira estado.</p></details>
-  <details><summary>2. O <code>await</code> trava o app?</summary>
-    <p>Não — ele pausa <em>aquela função</em> e libera a UI. É por isso que o spinner gira.</p></details>
-  <details><summary>3. Amanhã a API muda de endereço. O que muda no app?</summary>
-    <p>Só <code>data/</code>. Interface, controller e testes nem ficam sabendo — o Módulo 1 cobrando o investimento.</p></details>
 
   <h3>Erros comuns</h3>
   <table>
