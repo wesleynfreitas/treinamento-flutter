@@ -70,7 +70,7 @@
   <div>🐦💜</div>
   <h1>Treinamento Flutter para Iniciantes</h1>
   <p>Construa o app <strong>Minhas Tarefas</strong> na sua máquina, módulo a módulo:
-     widgets, gerenciamento de estado e arquitetura — o mesmo código rodando em
+     arquitetura, gerenciamento de estado e consumo de API — o mesmo código rodando em
      <strong>iOS, Android, Web e macOS</strong>.</p>
   <div>
     <span class="selo">3 módulos</span>
@@ -85,9 +85,9 @@
 <nav>
   <a href="#como-funciona">Como funciona</a>
   <a href="#setup">Setup</a>
-  <a href="#modulo1">Módulo 1 · Widgets</a>
+  <a href="#modulo1">Módulo 1 · Arquitetura</a>
   <a href="#modulo2">Módulo 2 · Estado</a>
-  <a href="#modulo3">Módulo 3 · Arquitetura</a>
+  <a href="#modulo3">Módulo 3 · API e Async</a>
   <a href="#proximos-passos">Próximos passos</a>
 </nav>
 
@@ -96,15 +96,15 @@
 <!-- ============ COMO FUNCIONA ============ -->
 <section id="como-funciona">
   <h2>Como funciona o treinamento</h2>
-  <div class="ideia"><strong>A regra do dia:</strong> tudo é widget, e a interface é uma função do estado.
-    Você não “muda a tela” — você muda o estado, e a tela se reconstrói.</div>
+  <div class="ideia"><strong>A regra do dia:</strong> primeiro o mapa, depois o movimento, depois o mundo real.
+    Arquitetura separa · estado reage · a API alimenta. E a interface é sempre uma função do estado.</div>
 
   <div class="grade">
     <div class="cartao-modulo">
       <span class="tempo">40 min</span>
-      <h3>1 · Widgets e Layout</h3>
-      <p>Árvore de widgets, <code>StatelessWidget</code> × <code>StatefulWidget</code> e layout.
-         Você extrai seu primeiro widget próprio: o <code>TaskTile</code>.</p>
+      <h3>1 · Arquitetura e Organização</h3>
+      <p>O mapa do projeto em camadas <code>models → data → state → features</code>:
+         onde cada coisa mora e quem pode falar com quem.</p>
       <a href="#modulo1">Ir ao módulo →</a>
     </div>
     <div class="cartao-modulo">
@@ -116,9 +116,9 @@
     </div>
     <div class="cartao-modulo">
       <span class="tempo">40 min · Sessão 2</span>
-      <h3>3 · Arquitetura e Organização</h3>
-      <p>Do “arquivo único que funciona” ao projeto em camadas
-         <code>models → data → state → features</code>, com teste automatizado.</p>
+      <h3>3 · Consumo de API e Async</h3>
+      <p>Dados reais com <code>Future</code> e <code>http</code>: buscar tarefas da API tratando
+         <strong>carregando, erro e sucesso</strong> — sem a interface mudar.</p>
       <a href="#modulo3">Ir ao módulo →</a>
     </div>
   </div>
@@ -127,9 +127,9 @@
   <table>
     <tr><th>Sessão</th><th>Tempo</th><th>Conteúdo</th></tr>
     <tr><td rowspan="3"><strong>Sessão 1</strong></td><td>10 min</td><td>Abertura e conferência do setup</td></tr>
-    <tr><td>40 min</td><td>Módulo 1 · Widgets — <a href="#modulo1">roteiro</a></td></tr>
+    <tr><td>40 min</td><td>Módulo 1 · Arquitetura — <a href="#modulo1">roteiro</a></td></tr>
     <tr><td>40 min</td><td>Módulo 2 · Estado — ao final, o app já funciona ✅</td></tr>
-    <tr><td rowspan="2"><strong>Sessão 2</strong> (opcional)</td><td>40 min</td><td>Módulo 3 · Arquitetura</td></tr>
+    <tr><td rowspan="2"><strong>Sessão 2</strong> (opcional)</td><td>40 min</td><td>Módulo 3 · API e Async — tarefas vindas da internet</td></tr>
     <tr><td>20 min</td><td>Desafio final, testes e próximos passos</td></tr>
   </table>
   <p class="progresso">Os checklists desta página salvam seu progresso no navegador — pode fechar e voltar depois.</p>
@@ -169,78 +169,76 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
 
 <!-- ============ MÓDULO 1 ============ -->
 <section id="modulo1">
-  <h2>Módulo 1 · Widgets e Layout <span class="tempo">40 min</span></h2>
-  <p><strong>Objetivo:</strong> entender que “tudo é widget”, ler a árvore de widgets e criar um widget próprio reutilizável.<br>
-     <strong>Resultado:</strong> lista de tarefas com um <code>TaskTile</code> seu e layout organizado — ainda sem interação.</p>
+  <h2>Módulo 1 · Arquitetura e Organização <span class="tempo">40 min</span></h2>
+  <p><strong>Objetivo:</strong> antes de escrever funcionalidades, entender o mapa do projeto — onde cada coisa mora e quem pode falar com quem.<br>
+     <strong>Resultado:</strong> o mesmo app por fora, organizado em <code>models / data / state / features</code> por dentro.</p>
+
+  <div class="ideia"><strong>A ideia central:</strong> arquitetura para iniciantes não é um padrão famoso —
+    é <strong>cada arquivo com um motivo para existir</strong>, e dependência numa direção só:
+    <code>features → state → data → models</code>. Nunca o contrário.
+    Nos Módulos 2 e 3 você só vai <em>preencher</em> este mapa.</div>
 
   <h3>Roteiro</h3>
   <table>
     <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
-    <tr><td>0–5</td><td>Tudo é widget</td><td>Observar a árvore: <code>MaterialApp → Scaffold → AppBar / ListView</code></td></tr>
-    <tr><td>5–12</td><td>Stateless × Stateful</td><td>“O que muda nesta tela?” Nada → <code>StatelessWidget</code></td></tr>
-    <tr><td>12–15</td><td><code>build()</code> e <code>const</code></td><td><code>build()</code> descreve a interface a partir do estado atual</td></tr>
-    <tr><td>15–30</td><td><strong>Prática 1</strong></td><td>Extrair o <code>TaskTile</code> (abaixo)</td></tr>
-    <tr><td>30–37</td><td><strong>Prática 2</strong></td><td>Layout: cabeçalho + lista com <code>Expanded</code></td></tr>
-    <tr><td>37–40</td><td>Checkpoint + quiz</td><td>Rodar, analisar, responder</td></tr>
+    <tr><td>0–5</td><td>O cheiro</td><td>Modelo, dados, tela e tema num arquivo só: “onde mexe se vier API?”</td></tr>
+    <tr><td>5–12</td><td>As 4 camadas</td><td>Árvore alvo (abaixo) e a regra: sem <code>BuildContext</code> no model</td></tr>
+    <tr><td>12–30</td><td><strong>Prática · organização guiada</strong></td><td>Mover classe a classe (4 passos), rodando o app a cada passo</td></tr>
+    <tr><td>30–37</td><td>Leitura do mapa</td><td>“Onde entra o estado?” <code>state/</code> · “Onde entra a API?” <code>data/</code></td></tr>
+    <tr><td>37–40</td><td>Checkpoint + quiz</td><td><code>flutter analyze</code> e perguntas rápidas</td></tr>
   </table>
 
-  <h3>Prática 1 — extraia o <code>TaskTile</code></h3>
-  <p>No arquivo inicial, cada tarefa é um <code>ListTile</code> jogado dentro da lista. Extraia para um widget próprio
-     (ainda no mesmo arquivo):</p>
-  <div class="bloco"><pre><code>class TaskTile extends StatelessWidget {
-  const TaskTile({required this.title, super.key});
+  <h3>A árvore alvo</h3>
+  <div class="bloco"><pre><code>lib/
+  main.dart                        # só runApp()
+  app.dart                         # MaterialApp + tema
+  models/
+    task.dart                      # Task (id, title, done, copyWith)
+  data/
+    task_repository.dart           # fonte atual: memória
+  state/                           # (vazia de propósito: é o Módulo 2)
+  features/tasks/
+    tasks_page.dart                # a tela
+    widgets/
+      task_tile.dart               # widget "burro": dados + callbacks
+      empty_state.dart</code></pre></div>
 
+  <h3>Prática — organização em 4 passos seguros</h3>
+  <p><strong>Regra de ouro:</strong> rode o app após <em>cada</em> passo. Nunca organize no escuro — quebrou, o passo anterior é o resgate.</p>
+  <table>
+    <tr><th>Passo</th><th>Crie / mova</th><th>Para</th></tr>
+    <tr><td>1</td><td>Classe <code>Task</code></td><td><code>models/task.dart</code> — sem importar Flutter!</td></tr>
+    <tr><td>2</td><td>Lista inicial de tarefas</td><td><code>data/task_repository.dart</code> (<code>InMemoryTaskRepository.getAll()</code>)</td></tr>
+    <tr><td>3</td><td>Tema e <code>MaterialApp</code></td><td><code>app.dart</code> — <code>main.dart</code> fica com ~5 linhas</td></tr>
+    <tr><td>4</td><td>Tela e <code>TaskTile</code></td><td><code>features/tasks/</code> — <code>TaskTile</code> só recebe dados e callbacks</td></tr>
+  </table>
+  <div class="bloco"><pre><code>// models/task.dart — conceito do domínio, zero Flutter
+class Task {
+  const Task({required this.id, required this.title, this.done = false});
+  final String id;
   final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: const Icon(Icons.circle_outlined),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
-      ),
-    );
-  }
+  final bool done;
+  Task copyWith({String? title, bool? done}) =&gt;
+      Task(id: id, title: title ?? this.title, done: done ?? this.done);
 }</code></pre></div>
-  <p>E na lista, troque o <code>ListTile</code> por:</p>
-  <div class="bloco"><pre><code>return TaskTile(title: _tarefas[index]);</code></pre></div>
-  <div class="dica"><strong>Atalho:</strong> no VS Code, clique sobre um widget e use <code>Cmd/Ctrl + .</code> → <em>Extract Widget</em>.
-    Use o atalho depois de digitar a primeira vez na mão — é digitar que fixa o conceito.</div>
-
-  <h3>Prática 2 — o layout da tela</h3>
-  <div class="bloco"><pre><code>body: Column(
-  children: [
-    const Padding(
-      padding: EdgeInsets.all(16),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text('3 tarefas',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-      ),
-    ),
-    Expanded(child: /* o ListView.builder que já existe */),
-  ],
-),</code></pre></div>
-  <div class="dica"><strong>Erro nº 1 de quem começa:</strong> remova o <code>Expanded</code> e veja a tela vermelha
-    <em>“Vertical viewport was given unbounded height”</em>. Lista dentro de <code>Column</code> precisa de <code>Expanded</code> — grave isso.</div>
+  <div class="dica"><strong>Travou em widget/layout?</strong> Consulte o material de apoio de Widgets e Layout
+    que acompanha o treinamento. E lembre: widget “burro” (só dados + callbacks) é elogio, não insulto! 😉</div>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 1</h3>
-    <label><input type="checkbox" data-check="m1a"> O app lista as 3 tarefas em cartões (<code>Card</code>)</label>
-    <label><input type="checkbox" data-check="m1b"> Existe uma classe <code>TaskTile extends StatelessWidget</code></label>
-    <label><input type="checkbox" data-check="m1c"> O cabeçalho fica fixo e a lista rola embaixo dele</label>
-    <label><input type="checkbox" data-check="m1d"> <code>flutter analyze</code> sem erros</label>
+    <label><input type="checkbox" data-check="arq1"> <code>lib/main.dart</code> tem ~5 linhas e nenhuma lista de tarefas</label>
+    <label><input type="checkbox" data-check="arq2"> <code>models/task.dart</code> não importa <code>flutter/material.dart</code></label>
+    <label><input type="checkbox" data-check="arq3"> A tela lê as tarefas do repository — nada fixo na interface</label>
+    <label><input type="checkbox" data-check="arq4"> O app lista as 3 tarefas, igual ao starter por fora · <code>flutter analyze</code> limpo</label>
   </div>
 
   <h3>Quiz rápido</h3>
-  <details><summary>1. A tela precisa mudar ao tocar num botão: Stateless ou Stateful?</summary>
-    <p><strong>Stateful</strong> — ou alguém gerencia o estado por ela (é o Módulo 2).</p></details>
-  <details><summary>2. O que o <code>build()</code> recebe e devolve?</summary>
-    <p>Recebe o <code>BuildContext</code> e devolve a árvore de widgets daquela parte da tela.</p></details>
-  <details><summary>3. Dei Hot Reload e meu dado sumiu. Por quê?</summary>
-    <p>Provavelmente foi Hot <em>Restart</em>: o Reload preserva o estado, o Restart recria o app do zero.</p></details>
+  <details><summary>1. Amanhã as tarefas vêm de uma API. Quais arquivos mudam?</summary>
+    <p>Só a camada <code>data/</code> — é o Módulo 3, e a interface nem fica sabendo.</p></details>
+  <details><summary>2. O <code>TaskTile</code> pode buscar dados no repository?</summary>
+    <p>Não — widget “burro” recebe dados e callbacks. Quem conhece a fonte é a página (e, no Módulo 2, o controlador).</p></details>
+  <details><summary>3. Por que <code>models/</code> não importa Flutter?</summary>
+    <p>Model é conceito do domínio: sem Flutter ele é testável, reutilizável e não quebra quando a interface muda.</p></details>
 </section>
 
 <!-- ============ MÓDULO 2 ============ -->
@@ -250,54 +248,59 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
      <strong>Resultado:</strong> app de tarefas <strong>funcionando</strong>, com o estado num <code>TaskController</code> fora da tela.</p>
 
   <div class="ideia"><strong>A ideia central:</strong> interface = função do estado.
-    A única pergunta de arquitetura aqui é: <strong>quem é o dono do estado?</strong>
-    Vamos viver a evolução: lista fixa → <code>setState</code> na tela → controlador fora da tela.</div>
+    A única pergunta aqui é: <strong>quem é o dono do estado?</strong>
+    A pasta <code>state/</code>, vazia desde o Módulo 1, ganha seu morador:
+    tela lendo a fonte direto → <code>setState</code> na tela → controlador fora da tela.</div>
 
   <h3>Roteiro</h3>
   <table>
     <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
-    <tr><td>0–5</td><td>O problema</td><td>Apertar o botão <code>+</code> não faz nada. Por quê?</td></tr>
-    <tr><td>5–18</td><td><strong>Prática 1 · <code>setState</code></strong></td><td>A tela vira <code>StatefulWidget</code> e a lista passa a mudar</td></tr>
-    <tr><td>18–22</td><td>A dor</td><td>“E se outra tela precisar desta lista?” Estado preso na tela não escala</td></tr>
-    <tr><td>22–35</td><td><strong>Prática 2 · <code>ChangeNotifier</code></strong></td><td>Extrair o <code>TaskController</code></td></tr>
+    <tr><td>0–5</td><td>O problema</td><td>Apertar o botão <code>+</code> não faz nada. Falta um dono do estado</td></tr>
+    <tr><td>5–15</td><td><strong>Prática 1 · <code>setState</code></strong></td><td>Tocar risca a tarefa — funciona, mas o estado fica preso à tela</td></tr>
+    <tr><td>15–20</td><td>A dor</td><td>“E se outra tela precisar desta lista?” Estado preso não escala</td></tr>
+    <tr><td>20–35</td><td><strong>Prática 2 · <code>ChangeNotifier</code></strong></td><td>Criar o <code>TaskController</code> em <code>state/</code></td></tr>
     <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Adicionar, concluir, remover — tudo funcionando</td></tr>
   </table>
 
-  <h3>Prática 1 — <code>setState</code>, o jeito rápido</h3>
-  <p>Converta a tela para <code>StatefulWidget</code> (clique na classe → <code>Cmd/Ctrl + .</code> → <em>Convert to StatefulWidget</em>),
-     torne a lista mutável e ligue o botão:</p>
-  <div class="bloco"><pre><code>floatingActionButton: FloatingActionButton(
-  onPressed: () =&gt; setState(
-    () =&gt; _tarefas.add('Nova tarefa ${_tarefas.length + 1}'),
-  ),
-  child: const Icon(Icons.add),
-),</code></pre></div>
+  <h3>Prática 1 — <code>setState</code>, o jeito rápido (para sentir o problema)</h3>
+  <p>Na tela (<code>StatefulWidget</code>), o toque numa tarefa alterna um estado local e chama <code>setState</code>:</p>
+  <div class="bloco"><pre><code>onTap: () =&gt; setState(() =&gt; _concluidasLocalmente.add(task.id))</code></pre></div>
+  <p>Funciona — mas esse estado morreu dentro da tela: contador, outra tela e testes não enxergam nada. É essa dor que a Prática 2 resolve.</p>
   <div class="ideia"><strong>Frase para gravar:</strong> “<code>setState</code> não desenha nada.
     Ele só avisa: <em>mudou — roda o <code>build()</code> de novo</em>.”</div>
 
-  <h3>Prática 2 — estado fora da tela, o jeito que escala</h3>
+  <h3>Prática 2 — o controlador em <code>state/</code>, o jeito que escala</h3>
   <div class="bloco"><pre><code>class TaskController extends ChangeNotifier {
-  final _tarefas = &lt;String&gt;['Instalar o Flutter', 'Rodar o primeiro app'];
+  TaskController(this._repository);
 
-  List&lt;String&gt; get tarefas =&gt; List.unmodifiable(_tarefas);
+  final InMemoryTaskRepository _repository;
 
-  void adicionar(String titulo) {
-    if (titulo.trim().isEmpty) return;
-    _tarefas.add(titulo.trim());
+  List&lt;Task&gt; get tasks =&gt; _repository.getAll();
+  int get pendingCount =&gt; tasks.where((t) =&gt; !t.done).length;
+
+  void addTask(String title) {
+    if (title.trim().isEmpty) return;
+    _repository.add(Task(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      title: title.trim(),
+    ));
     notifyListeners(); // <- sem isto, a interface não fica sabendo!
   }
-
-  void remover(String titulo) {
-    _tarefas.remove(titulo);
-    notifyListeners();
-  }
+  // toggleTask / removeTask: mesma ideia — muta via repository e avisa
 }</code></pre></div>
   <p>A tela guarda o controlador, escuta com <code>ListenableBuilder</code> e só chama <em>intenções</em>:</p>
   <div class="bloco"><pre><code>body: ListenableBuilder(
   listenable: _controller,
   builder: (context, _) =&gt; ListView.builder(
-    itemCount: _controller.tarefas.length,
-    itemBuilder: (context, i) =&gt; TaskTile(title: _controller.tarefas[i]),
+    itemCount: _controller.tasks.length,
+    itemBuilder: (context, i) {
+      final task = _controller.tasks[i];
+      return TaskTile(
+        task: task,
+        onToggle: () =&gt; _controller.toggleTask(task.id),
+        onDelete: () =&gt; _controller.removeTask(task.id),
+      );
+    },
   ),
 ),</code></pre></div>
 
@@ -323,73 +326,112 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
     <tr><th>Sintoma</th><th>Causa provável</th></tr>
     <tr><td>Toco e nada muda</td><td>Faltou <code>setState</code>/<code>notifyListeners()</code>, ou você mudou uma cópia da lista</td></tr>
     <tr><td><code>setState() called after dispose()</code></td><td>Controlador vivo depois que a tela fechou — faltou <code>dispose()</code></td></tr>
-    <tr><td>A lista “volta” no Hot Restart</td><td>Esperado: o estado está só na memória. Persistir é o próximo nível (Módulo 3)</td></tr>
+    <tr><td>A lista “volta” no Hot Restart</td><td>Esperado: o estado está só na memória. Buscar de uma fonte real é o Módulo 3</td></tr>
   </table>
 </section>
 
 <!-- ============ MÓDULO 3 ============ -->
 <section id="modulo3">
-  <h2>Módulo 3 · Arquitetura e Organização <span class="tempo">40 min · Sessão 2</span></h2>
-  <p><strong>Objetivo:</strong> transformar o “arquivo único que funciona” num projeto que outra pessoa consegue ler, testar e evoluir.<br>
-     <strong>Resultado:</strong> o mesmo app por fora, organizado em camadas por dentro — com teste automatizado passando.</p>
+  <h2>Módulo 3 · Consumo de API e Async <span class="tempo">40 min · Sessão 2</span></h2>
+  <p><strong>Objetivo:</strong> buscar as tarefas de uma API real e tratar os três estados de toda tela assíncrona: <strong>carregando, erro e sucesso</strong>.<br>
+     <strong>Resultado:</strong> tarefas vindas da internet (JSONPlaceholder), com spinner e “tentar de novo” — e a interface praticamente intacta.</p>
 
-  <div class="ideia"><strong>A ideia central:</strong> arquitetura para iniciantes não é um padrão famoso —
-    é <strong>cada arquivo com um motivo para existir</strong>, e dependência numa direção só:
-    <code>features → state → data → models</code>. Nunca o contrário.</div>
+  <div class="ideia"><strong>A ideia central:</strong> dado que vem da rede <strong>demora e pode falhar</strong>.
+    Quem busca é <code>data/</code>; quem expõe o estado é <code>state/</code>; a interface só desenha.
+    É a ordem do treinamento se pagando: arquitetura isolou a fonte, estado isolou a reação.</div>
 
-  <h3>A árvore alvo</h3>
-  <div class="bloco"><pre><code>lib/
-  main.dart                        # só runApp()
-  app.dart                         # MaterialApp + tema
-  models/
-    task.dart                      # Task (id, title, done, copyWith)
-  data/
-    task_repository.dart           # de onde as tarefas vêm
-  state/
-    task_controller.dart           # ChangeNotifier: add/toggle/remove
-  features/tasks/
-    tasks_page.dart                # a tela
-    widgets/
-      task_tile.dart               # widget "burro": dados + callbacks
-      empty_state.dart
-      add_task_dialog.dart</code></pre></div>
-
-  <h3>Refatoração guiada — 5 passos seguros</h3>
-  <p><strong>Regra de ouro:</strong> rode o app após <em>cada</em> passo. Nunca refatore no escuro —
-     quebrou, o passo anterior é o seu resgate.</p>
+  <h3>Roteiro</h3>
   <table>
-    <tr><th>Passo</th><th>Mova</th><th>Para</th></tr>
-    <tr><td>1</td><td>A classe <code>Task</code></td><td><code>models/task.dart</code> — sem importar Flutter!</td></tr>
-    <tr><td>2</td><td>O <code>TaskController</code></td><td><code>state/task_controller.dart</code></td></tr>
-    <tr><td>3</td><td>A lista de tarefas</td><td><code>data/task_repository.dart</code> — o controlador <em>recebe</em> o repositório no construtor</td></tr>
-    <tr><td>4</td><td>Tema e <code>MaterialApp</code></td><td><code>app.dart</code> — o <code>main.dart</code> fica com ~5 linhas</td></tr>
-    <tr><td>5</td><td>Tela e widgets</td><td><code>features/tasks/</code> — o <code>TaskTile</code> só recebe dados e callbacks</td></tr>
+    <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
+    <tr><td>0–5</td><td>O problema</td><td>Hoje a lista nasce pronta na memória. Na vida real: demora, falha, vem em JSON</td></tr>
+    <tr><td>5–12</td><td><code>Future</code> e <code>async/await</code></td><td>Valor que chega depois, sem travar a interface · <code>try/catch</code></td></tr>
+    <tr><td>12–25</td><td><strong>Prática 1 · API em <code>data/</code></strong></td><td><code>flutter pub add http</code>, <code>Task.fromJson</code>, <code>ApiTaskRepository</code></td></tr>
+    <tr><td>25–35</td><td><strong>Prática 2 · os 3 estados</strong></td><td><code>isLoading</code>/<code>errorMessage</code> no controlador; spinner, erro ou lista na tela</td></tr>
+    <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Cortar a rede e ver o erro bonito · <code>flutter analyze</code></td></tr>
   </table>
 
-  <h3>O teste que prova o ponto</h3>
-  <p>Com a regra fora da tela, dá para testar <strong>sem abrir interface nenhuma</strong>:</p>
-  <div class="bloco"><pre><code>flutter test
-# TaskController: addTask ignora título vazio · toggleTask marca e desmarca ✅</code></pre></div>
-  <div class="ideia"><strong>Frase para gravar:</strong> “se precisa abrir a tela para testar a regra,
-    a regra mora no lugar errado.”</div>
+  <h3>A API do treinamento</h3>
+  <p><a href="https://jsonplaceholder.typicode.com/todos?_limit=10" target="_blank" rel="noopener">JSONPlaceholder</a> —
+     API pública de mentirinha, perfeita para treinar:</p>
+  <div class="bloco"><pre><code>GET https://jsonplaceholder.typicode.com/todos?_limit=10
+→ [ { "id": 1, "title": "delectus aut autem", "completed": false }, ... ]</code></pre></div>
+  <div class="dica"><strong>Sem internet no local?</strong> Plano B: o mesmo repository em memória com
+    <code>Future.delayed(const Duration(seconds: 1))</code>. Todo o resto funciona igual — async é async.</div>
+
+  <h3>Prática 1 — a fonte nova mora em <code>data/</code></h3>
+  <div class="bloco"><pre><code>// no terminal:  flutter pub add http
+
+// models/task.dart — a tradução do JSON
+factory Task.fromJson(Map&lt;String, dynamic&gt; json) {
+  return Task(
+    id: json['id'].toString(),
+    title: json['title'] as String,
+    done: json['completed'] as bool? ?? false,
+  );
+}</code></pre></div>
+  <div class="bloco"><pre><code>// data/task_repository.dart — a mesma interface, outra fonte
+class ApiTaskRepository {
+  Future&lt;List&lt;Task&gt;&gt; fetchTasks() async {
+    final response = await http.get(
+      Uri.parse('https://jsonplaceholder.typicode.com/todos?_limit=10'),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao buscar tarefas (${response.statusCode})');
+    }
+    final List&lt;dynamic&gt; data = jsonDecode(response.body);
+    return data.map((e) =&gt; Task.fromJson(e as Map&lt;String, dynamic&gt;)).toList();
+  }
+}</code></pre></div>
+
+  <h3>Prática 2 — os 3 estados, no controlador e na tela</h3>
+  <div class="bloco"><pre><code>// state/task_controller.dart
+Future&lt;void&gt; loadTasks() async {
+  isLoading = true;
+  errorMessage = null;
+  notifyListeners();
+  try {
+    _tasks = await _apiRepository.fetchTasks();
+  } catch (_) {
+    errorMessage = 'Não foi possível carregar as tarefas.';
+  } finally {
+    isLoading = false;
+    notifyListeners();
+  }
+}</code></pre></div>
+  <div class="bloco"><pre><code>// na tela, a ordem dos ifs É a aula:
+if (_controller.isLoading &amp;&amp; _controller.tasks.isEmpty) {
+  return const Center(child: CircularProgressIndicator()); // carregando
+}
+if (_controller.errorMessage != null &amp;&amp; _controller.tasks.isEmpty) {
+  return /* mensagem + botão "Tentar de novo" */;             // erro
+}
+if (_controller.tasks.isEmpty) return const EmptyState();
+return /* a mesma lista do Módulo 2 */;                       // sucesso</code></pre></div>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 3 (final!)</h3>
-    <label><input type="checkbox" data-check="m3a"> <code>lib/main.dart</code> tem ~5 linhas e nenhuma lista de tarefas</label>
-    <label><input type="checkbox" data-check="m3b"> <code>models/task.dart</code> não importa <code>flutter/material.dart</code></label>
-    <label><input type="checkbox" data-check="m3c"> A interface não conhece o repositório — só o controlador</label>
-    <label><input type="checkbox" data-check="m3d"> O app se comporta igual ao fim do Módulo 2</label>
-    <label><input type="checkbox" data-check="m3e"> <code>flutter analyze</code> limpo e <code>flutter test</code> verde 🎉</label>
+    <label><input type="checkbox" data-check="api1"> As tarefas vêm da API (ou do mock com <code>Future.delayed</code>), não da lista fixa</label>
+    <label><input type="checkbox" data-check="api2"> Ao abrir: spinner → lista, sem tela travada</label>
+    <label><input type="checkbox" data-check="api3"> Sem rede: erro com “Tentar de novo” — e o botão funciona</label>
+    <label><input type="checkbox" data-check="api4"> <code>TaskTile</code>, formulário e contador não mudaram desde o Módulo 2</label>
+    <label><input type="checkbox" data-check="api5"> <code>flutter analyze</code> limpo 🎉</label>
   </div>
 
   <h3>Quiz rápido</h3>
-  <details><summary>1. Amanhã as tarefas vêm de uma API. Quais arquivos mudam?</summary>
-    <p>Só a camada <code>data/</code> (um novo repositório) e onde ele é criado. Interface e modelo intactos.</p></details>
-  <details><summary>2. O <code>TaskTile</code> pode chamar o controlador direto?</summary>
-    <p>Não — widget “burro” recebe dados e callbacks. Quem conhece o controlador é a página. E “burro” aqui é elogio!</p></details>
-  <details><summary>3. Organizar por tipo ou por funcionalidade?</summary>
-    <p>Começamos por camadas para aprender os limites. Em projeto real: <strong>funcionalidade primeiro</strong>
-      (<code>features/tasks/widgets/…</code>) — a árvore alvo já faz isso.</p></details>
+  <details><summary>1. Por que não buscar a API direto no <code>build()</code>?</summary>
+    <p><code>build()</code> roda toda hora e não é lugar de efeito colateral. Busca-se uma vez e o resultado vira estado.</p></details>
+  <details><summary>2. O <code>await</code> trava o app?</summary>
+    <p>Não — ele pausa <em>aquela função</em> e libera a interface. É por isso que o spinner gira.</p></details>
+  <details><summary>3. Amanhã a API muda de endereço. O que muda no app?</summary>
+    <p>Só <code>data/</code>. Interface, controlador e testes nem ficam sabendo — o Módulo 1 cobrando o investimento.</p></details>
+
+  <h3>Erros comuns</h3>
+  <table>
+    <tr><th>Sintoma</th><th>Causa provável</th></tr>
+    <tr><td>Spinner eterno</td><td>Esqueceu <code>isLoading = false</code> no <code>finally</code>, ou a exceção estourou sem <code>catch</code></td></tr>
+    <tr><td><code>type 'List&lt;dynamic&gt;' is not a subtype…</code></td><td>Faltou mapear o JSON com <code>Task.fromJson</code> item a item</td></tr>
+    <tr><td>Erro só na Web (CORS)</td><td>A API precisa permitir CORS — a JSONPlaceholder permite; APIs internas podem não permitir</td></tr>
+  </table>
 </section>
 
 <!-- ============ PRÓXIMOS PASSOS ============ -->
@@ -398,9 +440,10 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
   <table>
     <tr><th>Passo</th><th>O que aprender</th><th>Por que agora</th></tr>
     <tr><td>1</td><td><strong>Persistência</strong> com <code>SharedPreferences</code></td><td>Só a camada <code>data/</code> muda — você já tem a arquitetura</td></tr>
-    <tr><td>2</td><td><strong>Navegação</strong> (<code>Navigator.push</code>)</td><td>Tela de detalhe da tarefa</td></tr>
-    <tr><td>3</td><td><strong>Estado em escala</strong>: Provider ou Riverpod</td><td>Quando houver mais de um controlador</td></tr>
-    <tr><td>4</td><td><strong>Publicar</strong>: assinatura e lojas</td><td>Team no Xcode (iOS/macOS) e keystore (Android)</td></tr>
+    <tr><td>2</td><td><strong>Navegação e formulários</strong> (<code>Navigator.push</code>)</td><td>Tela de detalhe/edição da tarefa</td></tr>
+    <tr><td>3</td><td><strong>Testes</strong>: unidade e de widget</td><td>O controlador já é testável sem tela — inclua um repository falso</td></tr>
+    <tr><td>4</td><td><strong>Estado em escala</strong>: Provider ou Riverpod</td><td>Quando houver mais de um controlador</td></tr>
+    <tr><td>5</td><td><strong>Publicar</strong>: assinatura e lojas</td><td>Team no Xcode (iOS/macOS) e keystore (Android)</td></tr>
   </table>
   <h3>Para continuar estudando</h3>
   <ul>
@@ -409,8 +452,8 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
     <li><a href="https://docs.flutter.dev" target="_blank" rel="noopener">Documentação do Flutter</a></li>
   </ul>
   <div class="dica"><strong>Desafio para casa:</strong> faça as tarefas sobreviverem ao fechar o app.
-    Dica: crie um repositório novo com <code>SharedPreferences</code> e troque só a criação dele na tela.
-    Se a sua arquitetura do Módulo 3 estiver certa, nenhum widget muda. 💪</div>
+    Dica: salve a lista carregada com <code>SharedPreferences</code> na camada <code>data/</code> e use como cache.
+    Se a sua arquitetura do Módulo 1 estiver certa, nenhum widget muda. 💪</div>
 </section>
 
 </main>
