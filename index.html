@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Treinamento Flutter para Iniciantes — Widgets, Gerenciamento de Estado e Arquitetura, com projeto prático Minhas Tarefas para iOS, Android, Web e macOS.">
+<title>Treinamento Flutter para Iniciantes — Minhas Tarefas</title>
+<style>
+  :root{
+    --roxo:#673ab7; --roxo-escuro:#4527a0; --roxo-claro:#ede7f6;
+    --fundo:#faf9fc; --cartao:#fff; --texto:#212121; --suave:#5f6368;
+    --borda:#e0dbe8; --verde:#1e7d32; --verde-fundo:#e6f4ea;
+    --amarelo-fundo:#fef7e0; --codigo:#1e1e2e; --codigo-texto:#e6e6f0;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--fundo);color:var(--texto);line-height:1.65}
+  a{color:var(--roxo-escuro);font-weight:600}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:.92em;background:var(--roxo-claro);padding:.1em .35em;border-radius:4px}
+  /* Cabeçalho */
+  header.hero{background:linear-gradient(135deg,var(--roxo-escuro),var(--roxo));color:#fff;padding:3rem 1.5rem 2.5rem;text-align:center}
+  header.hero h1{margin:.2rem 0;font-size:2.4rem;line-height:1.2}
+  header.hero p{max-width:720px;margin:.8rem auto;font-size:1.1rem;opacity:.95}
+  .selo{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:.15rem .8rem;margin:.2rem;font-size:.85rem}
+  .botao{display:inline-block;background:#fff;color:var(--roxo-escuro);padding:.7rem 1.4rem;border-radius:999px;text-decoration:none;font-weight:700;margin-top:1rem}
+  .botao:hover{background:var(--roxo-claro)}
+  /* Navegação */
+  nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--borda);padding:.6rem 1rem;text-align:center;overflow-x:auto;white-space:nowrap}
+  nav a{margin:0 .7rem;text-decoration:none;font-size:.95rem}
+  nav a:hover{text-decoration:underline}
+  main{max-width:960px;margin:0 auto;padding:1.5rem 1rem 4rem}
+  section{background:var(--cartao);border:1px solid var(--borda);border-radius:16px;padding:1.8rem;margin:1.5rem 0;scroll-margin-top:70px}
+  h2{color:var(--roxo-escuro);margin-top:0;font-size:1.7rem}
+  h3{color:var(--roxo);margin-bottom:.4rem}
+  /* Cartões e tabelas */
+  .grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+  .cartao-modulo{border:2px solid var(--roxo-claro);border-radius:12px;padding:1.1rem;background:#fff}
+  .cartao-modulo h3{margin-top:0}
+  .tempo{display:inline-block;background:var(--roxo);color:#fff;border-radius:6px;padding:.05rem .55rem;font-size:.8rem;font-weight:700}
+  table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.95rem}
+  th,td{border:1px solid var(--borda);padding:.5rem .7rem;text-align:left;vertical-align:top}
+  th{background:var(--roxo-claro)}
+  /* Código */
+  .bloco{position:relative;margin:1rem 0}
+  pre{background:var(--codigo);color:var(--codigo-texto);padding:1rem;border-radius:10px;overflow-x:auto;margin:0}
+  pre code{background:none;padding:0;color:inherit}
+  .copiar{position:absolute;top:.5rem;right:.5rem;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:6px;padding:.2rem .6rem;cursor:pointer;font-size:.8rem}
+  .copiar:hover{background:rgba(255,255,255,.3)}
+  /* Caixas */
+  .dica{background:var(--amarelo-fundo);border-left:4px solid #f9ab00;border-radius:6px;padding:.8rem 1rem;margin:1rem 0}
+  .ideia{background:var(--roxo-claro);border-left:4px solid var(--roxo);border-radius:6px;padding:.8rem 1rem;margin:1rem 0}
+  /* Checklist */
+  .checkpoint{background:var(--verde-fundo);border:1px solid #a3d9b1;border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}
+  .checkpoint h3{color:var(--verde);margin-top:0}
+  .checkpoint label{display:block;cursor:pointer;padding:.15rem 0}
+  .checkpoint input{accent-color:var(--verde);width:1.05rem;height:1.05rem;vertical-align:-2px}
+  .progresso{font-size:.85rem;color:var(--suave)}
+  /* Quiz */
+  details{border:1px solid var(--borda);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0;background:#fff}
+  summary{cursor:pointer;font-weight:600}
+  details[open ] summary{color:var(--roxo-escuro)}
+  details p{margin:.6rem 0 .2rem}
+  footer{text-align:center;color:var(--suave);padding:2rem 1rem;font-size:.9rem}
+  @media print{nav,.copiar,.botao{display:none}section{break-inside:avoid;border:none}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div>🐦💜</div>
+  <h1>Treinamento Flutter para Iniciantes</h1>
+  <p>Construa o app <strong>Minhas Tarefas</strong> na sua máquina, módulo a módulo:
+     widgets, gerenciamento de estado e arquitetura — o mesmo código rodando em
+     <strong>iOS, Android, Web e macOS</strong>.</p>
+  <div>
+    <span class="selo">3 módulos</span>
+    <span class="selo">40 min por módulo</span>
+    <span class="selo">100% prático (hands-on)</span>
+    <span class="selo">Sem backend</span>
+  </div>
+  <br>
+  <a class="botao" href="#setup">Começar pelo setup →</a>
+</header>
+
+<nav>
+  <a href="#como-funciona">Como funciona</a>
+  <a href="#setup">Setup</a>
+  <a href="#modulo1">Módulo 1 · Widgets</a>
+  <a href="#modulo2">Módulo 2 · Estado</a>
+  <a href="#modulo3">Módulo 3 · Arquitetura</a>
+  <a href="#proximos-passos">Próximos passos</a>
+</nav>
+
+<main>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section id="como-funciona">
+  <h2>Como funciona o treinamento</h2>
+  <div class="ideia"><strong>A regra do dia:</strong> tudo é widget, e a interface é uma função do estado.
+    Você não “muda a tela” — você muda o estado, e a tela se reconstrói.</div>
+
+  <div class="grade">
+    <div class="cartao-modulo">
+      <span class="tempo">40 min</span>
+      <h3>1 · Widgets e Layout</h3>
+      <p>Árvore de widgets, <code>StatelessWidget</code> × <code>StatefulWidget</code> e layout.
+         Você extrai seu primeiro widget próprio: o <code>TaskTile</code>.</p>
+      <a href="#modulo1">Ir ao módulo →</a>
+    </div>
+    <div class="cartao-modulo">
+      <span class="tempo">40 min</span>
+      <h3>2 · Gerenciamento de Estado</h3>
+      <p>De <code>setState</code> a <code>ChangeNotifier</code>: adicionar, concluir e remover tarefas
+         com o estado morando fora da tela, num <code>TaskController</code>.</p>
+      <a href="#modulo2">Ir ao módulo →</a>
+    </div>
+    <div class="cartao-modulo">
+      <span class="tempo">40 min · Sessão 2</span>
+      <h3>3 · Arquitetura e Organização</h3>
+      <p>Do “arquivo único que funciona” ao projeto em camadas
+         <code>models → data → state → features</code>, com teste automatizado.</p>
+      <a href="#modulo3">Ir ao módulo →</a>
+    </div>
+  </div>
+
+  <h3>Cronograma</h3>
+  <table>
+    <tr><th>Sessão</th><th>Tempo</th><th>Conteúdo</th></tr>
+    <tr><td rowspan="3"><strong>Sessão 1</strong></td><td>10 min</td><td>Abertura e conferência do setup</td></tr>
+    <tr><td>40 min</td><td>Módulo 1 · Widgets — <a href="#modulo1">roteiro</a></td></tr>
+    <tr><td>40 min</td><td>Módulo 2 · Estado — ao final, o app já funciona ✅</td></tr>
+    <tr><td rowspan="2"><strong>Sessão 2</strong> (opcional)</td><td>40 min</td><td>Módulo 3 · Arquitetura</td></tr>
+    <tr><td>20 min</td><td>Desafio final, testes e próximos passos</td></tr>
+  </table>
+  <p class="progresso">Os checklists desta página salvam seu progresso no navegador — pode fechar e voltar depois.</p>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="setup">
+  <h2>Setup — antes de começar</h2>
+  <p>Faça isto <strong>na véspera</strong>. No dia, rode o app no navegador
+     (<code>flutter run -d chrome</code>) para não perder tempo com emulador.</p>
+
+  <div class="bloco"><pre><code>flutter --version   # Flutter 3.x instalado?
+flutter doctor      # sem erros críticos?
+flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
+
+  <h3>Rodar em cada plataforma</h3>
+  <table>
+    <tr><th>Plataforma</th><th>Comando</th><th>Observação</th></tr>
+    <tr><td>🌐 Web</td><td><code>flutter run -d chrome</code></td><td><strong>Recomendado no dia</strong> — sem emulador</td></tr>
+    <tr><td>🍎 iOS</td><td><code>flutter run -d ios</code></td><td>Simulador (<code>open -a Simulator</code>) ou iPhone conectado</td></tr>
+    <tr><td>🤖 Android</td><td><code>flutter run -d android</code></td><td>Emulador ou aparelho com depuração USB</td></tr>
+    <tr><td>🖥️ macOS</td><td><code>flutter run -d macos</code></td><td>App desktop nativo</td></tr>
+  </table>
+  <p>Durante a execução: <code>r</code> = Hot Reload · <code>R</code> = Hot Restart · <code>q</code> = sair.
+     O Hot Reload é o superpoder do Flutter: salve o arquivo e veja a mudança em ~1 segundo, sem perder o estado.</p>
+
+  <div class="checkpoint">
+    <h3>✅ Checkpoint do setup</h3>
+    <label><input type="checkbox" data-check="setup1"> <code>flutter doctor</code> sem erros críticos</label>
+    <label><input type="checkbox" data-check="setup2"> Pasta <code>projeto-starter</code> aberta no editor (VS Code ou Android Studio)</label>
+    <label><input type="checkbox" data-check="setup3"> App abriu no Chrome com a lista “Minhas Tarefas”</label>
+  </div>
+
+  <div class="dica"><strong>Travou?</strong> Não gaste mais de 5 minutos debugando setup na frente da turma:
+    volte ao último checkpoint e peça ajuda ao instrutor. O código final de referência existe — mas só olhe depois de tentar! 😉</div>
+</section>
+
+<!-- ============ MÓDULO 1 ============ -->
+<section id="modulo1">
+  <h2>Módulo 1 · Widgets e Layout <span class="tempo">40 min</span></h2>
+  <p><strong>Objetivo:</strong> entender que “tudo é widget”, ler a árvore de widgets e criar um widget próprio reutilizável.<br>
+     <strong>Resultado:</strong> lista de tarefas com um <code>TaskTile</code> seu e layout organizado — ainda sem interação.</p>
+
+  <h3>Roteiro</h3>
+  <table>
+    <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
+    <tr><td>0–5</td><td>Tudo é widget</td><td>Observar a árvore: <code>MaterialApp → Scaffold → AppBar / ListView</code></td></tr>
+    <tr><td>5–12</td><td>Stateless × Stateful</td><td>“O que muda nesta tela?” Nada → <code>StatelessWidget</code></td></tr>
+    <tr><td>12–15</td><td><code>build()</code> e <code>const</code></td><td><code>build()</code> descreve a interface a partir do estado atual</td></tr>
+    <tr><td>15–30</td><td><strong>Prática 1</strong></td><td>Extrair o <code>TaskTile</code> (abaixo)</td></tr>
+    <tr><td>30–37</td><td><strong>Prática 2</strong></td><td>Layout: cabeçalho + lista com <code>Expanded</code></td></tr>
+    <tr><td>37–40</td><td>Checkpoint + quiz</td><td>Rodar, analisar, responder</td></tr>
+  </table>
+
+  <h3>Prática 1 — extraia o <code>TaskTile</code></h3>
+  <p>No arquivo inicial, cada tarefa é um <code>ListTile</code> jogado dentro da lista. Extraia para um widget próprio
+     (ainda no mesmo arquivo):</p>
+  <div class="bloco"><pre><code>class TaskTile extends StatelessWidget {
+  const TaskTile({required this.title, super.key});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListTile(
+        leading: const Icon(Icons.circle_outlined),
+        title: Text(title),
+        trailing: const Icon(Icons.chevron_right),
+      ),
+    );
+  }
+}</code></pre></div>
+  <p>E na lista, troque o <code>ListTile</code> por:</p>
+  <div class="bloco"><pre><code>return TaskTile(title: _tarefas[index]);</code></pre></div>
+  <div class="dica"><strong>Atalho:</strong> no VS Code, clique sobre um widget e use <code>Cmd/Ctrl + .</code> → <em>Extract Widget</em>.
+    Use o atalho depois de digitar a primeira vez na mão — é digitar que fixa o conceito.</div>
+
+  <h3>Prática 2 — o layout da tela</h3>
+  <div class="bloco"><pre><code>body: Column(
+  children: [
+    const Padding(
+      padding: EdgeInsets.all(16),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text('3 tarefas',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      ),
+    ),
+    Expanded(child: /* o ListView.builder que já existe */),
+  ],
+),</code></pre></div>
+  <div class="dica"><strong>Erro nº 1 de quem começa:</strong> remova o <code>Expanded</code> e veja a tela vermelha
+    <em>“Vertical viewport was given unbounded height”</em>. Lista dentro de <code>Column</code> precisa de <code>Expanded</code> — grave isso.</div>
+
+  <div class="checkpoint">
+    <h3>✅ Checkpoint do Módulo 1</h3>
+    <label><input type="checkbox" data-check="m1a"> O app lista as 3 tarefas em cartões (<code>Card</code>)</label>
+    <label><input type="checkbox" data-check="m1b"> Existe uma classe <code>TaskTile extends StatelessWidget</code></label>
+    <label><input type="checkbox" data-check="m1c"> O cabeçalho fica fixo e a lista rola embaixo dele</label>
+    <label><input type="checkbox" data-check="m1d"> <code>flutter analyze</code> sem erros</label>
+  </div>
+
+  <h3>Quiz rápido</h3>
+  <details><summary>1. A tela precisa mudar ao tocar num botão: Stateless ou Stateful?</summary>
+    <p><strong>Stateful</strong> — ou alguém gerencia o estado por ela (é o Módulo 2).</p></details>
+  <details><summary>2. O que o <code>build()</code> recebe e devolve?</summary>
+    <p>Recebe o <code>BuildContext</code> e devolve a árvore de widgets daquela parte da tela.</p></details>
+  <details><summary>3. Dei Hot Reload e meu dado sumiu. Por quê?</summary>
+    <p>Provavelmente foi Hot <em>Restart</em>: o Reload preserva o estado, o Restart recria o app do zero.</p></details>
+</section>
+
+<!-- ============ MÓDULO 2 ============ -->
+<section id="modulo2">
+  <h2>Módulo 2 · Gerenciamento de Estado <span class="tempo">40 min</span></h2>
+  <p><strong>Objetivo:</strong> fazer o app reagir — adicionar, concluir e remover tarefas — e entender <em>onde</em> o estado deve morar.<br>
+     <strong>Resultado:</strong> app de tarefas <strong>funcionando</strong>, com o estado num <code>TaskController</code> fora da tela.</p>
+
+  <div class="ideia"><strong>A ideia central:</strong> interface = função do estado.
+    A única pergunta de arquitetura aqui é: <strong>quem é o dono do estado?</strong>
+    Vamos viver a evolução: lista fixa → <code>setState</code> na tela → controlador fora da tela.</div>
+
+  <h3>Roteiro</h3>
+  <table>
+    <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
+    <tr><td>0–5</td><td>O problema</td><td>Apertar o botão <code>+</code> não faz nada. Por quê?</td></tr>
+    <tr><td>5–18</td><td><strong>Prática 1 · <code>setState</code></strong></td><td>A tela vira <code>StatefulWidget</code> e a lista passa a mudar</td></tr>
+    <tr><td>18–22</td><td>A dor</td><td>“E se outra tela precisar desta lista?” Estado preso na tela não escala</td></tr>
+    <tr><td>22–35</td><td><strong>Prática 2 · <code>ChangeNotifier</code></strong></td><td>Extrair o <code>TaskController</code></td></tr>
+    <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Adicionar, concluir, remover — tudo funcionando</td></tr>
+  </table>
+
+  <h3>Prática 1 — <code>setState</code>, o jeito rápido</h3>
+  <p>Converta a tela para <code>StatefulWidget</code> (clique na classe → <code>Cmd/Ctrl + .</code> → <em>Convert to StatefulWidget</em>),
+     torne a lista mutável e ligue o botão:</p>
+  <div class="bloco"><pre><code>floatingActionButton: FloatingActionButton(
+  onPressed: () =&gt; setState(
+    () =&gt; _tarefas.add('Nova tarefa ${_tarefas.length + 1}'),
+  ),
+  child: const Icon(Icons.add),
+),</code></pre></div>
+  <div class="ideia"><strong>Frase para gravar:</strong> “<code>setState</code> não desenha nada.
+    Ele só avisa: <em>mudou — roda o <code>build()</code> de novo</em>.”</div>
+
+  <h3>Prática 2 — estado fora da tela, o jeito que escala</h3>
+  <div class="bloco"><pre><code>class TaskController extends ChangeNotifier {
+  final _tarefas = &lt;String&gt;['Instalar o Flutter', 'Rodar o primeiro app'];
+
+  List&lt;String&gt; get tarefas =&gt; List.unmodifiable(_tarefas);
+
+  void adicionar(String titulo) {
+    if (titulo.trim().isEmpty) return;
+    _tarefas.add(titulo.trim());
+    notifyListeners(); // <- sem isto, a interface não fica sabendo!
+  }
+
+  void remover(String titulo) {
+    _tarefas.remove(titulo);
+    notifyListeners();
+  }
+}</code></pre></div>
+  <p>A tela guarda o controlador, escuta com <code>ListenableBuilder</code> e só chama <em>intenções</em>:</p>
+  <div class="bloco"><pre><code>body: ListenableBuilder(
+  listenable: _controller,
+  builder: (context, _) =&gt; ListView.builder(
+    itemCount: _controller.tarefas.length,
+    itemBuilder: (context, i) =&gt; TaskTile(title: _controller.tarefas[i]),
+  ),
+),</code></pre></div>
+
+  <div class="checkpoint">
+    <h3>✅ Checkpoint do Módulo 2</h3>
+    <label><input type="checkbox" data-check="m2a"> O botão <code>+</code> adiciona e a tarefa aparece na hora, sem reiniciar</label>
+    <label><input type="checkbox" data-check="m2b"> Tocar/remover uma tarefa atualiza a lista</label>
+    <label><input type="checkbox" data-check="m2c"> A lista mora no <code>TaskController</code>, não na tela</label>
+    <label><input type="checkbox" data-check="m2d"> Toda mudança chama <code>notifyListeners()</code> · <code>flutter analyze</code> limpo</label>
+  </div>
+
+  <h3>Quiz rápido</h3>
+  <details><summary>1. Esqueci o <code>notifyListeners()</code>. O que acontece?</summary>
+    <p>O dado muda, mas a interface não: o <code>build()</code> nunca roda de novo.</p></details>
+  <details><summary>2. <code>setState</code> é errado?</summary>
+    <p>Não! É o certo para estado <strong>local e passageiro</strong> (aba selecionada, campo aberto).
+      Estado da funcionalidade e dos dados vai para o controlador.</p></details>
+  <details><summary>3. Por que <code>List.unmodifiable</code> ao expor a lista?</summary>
+    <p>Para ninguém burlar o controlador e mudar a lista sem avisar a interface.</p></details>
+
+  <h3>Erros comuns</h3>
+  <table>
+    <tr><th>Sintoma</th><th>Causa provável</th></tr>
+    <tr><td>Toco e nada muda</td><td>Faltou <code>setState</code>/<code>notifyListeners()</code>, ou você mudou uma cópia da lista</td></tr>
+    <tr><td><code>setState() called after dispose()</code></td><td>Controlador vivo depois que a tela fechou — faltou <code>dispose()</code></td></tr>
+    <tr><td>A lista “volta” no Hot Restart</td><td>Esperado: o estado está só na memória. Persistir é o próximo nível (Módulo 3)</td></tr>
+  </table>
+</section>
+
+<!-- ============ MÓDULO 3 ============ -->
+<section id="modulo3">
+  <h2>Módulo 3 · Arquitetura e Organização <span class="tempo">40 min · Sessão 2</span></h2>
+  <p><strong>Objetivo:</strong> transformar o “arquivo único que funciona” num projeto que outra pessoa consegue ler, testar e evoluir.<br>
+     <strong>Resultado:</strong> o mesmo app por fora, organizado em camadas por dentro — com teste automatizado passando.</p>
+
+  <div class="ideia"><strong>A ideia central:</strong> arquitetura para iniciantes não é um padrão famoso —
+    é <strong>cada arquivo com um motivo para existir</strong>, e dependência numa direção só:
+    <code>features → state → data → models</code>. Nunca o contrário.</div>
+
+  <h3>A árvore alvo</h3>
+  <div class="bloco"><pre><code>lib/
+  main.dart                        # só runApp()
+  app.dart                         # MaterialApp + tema
+  models/
+    task.dart                      # Task (id, title, done, copyWith)
+  data/
+    task_repository.dart           # de onde as tarefas vêm
+  state/
+    task_controller.dart           # ChangeNotifier: add/toggle/remove
+  features/tasks/
+    tasks_page.dart                # a tela
+    widgets/
+      task_tile.dart               # widget "burro": dados + callbacks
+      empty_state.dart
+      add_task_dialog.dart</code></pre></div>
+
+  <h3>Refatoração guiada — 5 passos seguros</h3>
+  <p><strong>Regra de ouro:</strong> rode o app após <em>cada</em> passo. Nunca refatore no escuro —
+     quebrou, o passo anterior é o seu resgate.</p>
+  <table>
+    <tr><th>Passo</th><th>Mova</th><th>Para</th></tr>
+    <tr><td>1</td><td>A classe <code>Task</code></td><td><code>models/task.dart</code> — sem importar Flutter!</td></tr>
+    <tr><td>2</td><td>O <code>TaskController</code></td><td><code>state/task_controller.dart</code></td></tr>
+    <tr><td>3</td><td>A lista de tarefas</td><td><code>data/task_repository.dart</code> — o controlador <em>recebe</em> o repositório no construtor</td></tr>
+    <tr><td>4</td><td>Tema e <code>MaterialApp</code></td><td><code>app.dart</code> — o <code>main.dart</code> fica com ~5 linhas</td></tr>
+    <tr><td>5</td><td>Tela e widgets</td><td><code>features/tasks/</code> — o <code>TaskTile</code> só recebe dados e callbacks</td></tr>
+  </table>
+
+  <h3>O teste que prova o ponto</h3>
+  <p>Com a regra fora da tela, dá para testar <strong>sem abrir interface nenhuma</strong>:</p>
+  <div class="bloco"><pre><code>flutter test
+# TaskController: addTask ignora título vazio · toggleTask marca e desmarca ✅</code></pre></div>
+  <div class="ideia"><strong>Frase para gravar:</strong> “se precisa abrir a tela para testar a regra,
+    a regra mora no lugar errado.”</div>
+
+  <div class="checkpoint">
+    <h3>✅ Checkpoint do Módulo 3 (final!)</h3>
+    <label><input type="checkbox" data-check="m3a"> <code>lib/main.dart</code> tem ~5 linhas e nenhuma lista de tarefas</label>
+    <label><input type="checkbox" data-check="m3b"> <code>models/task.dart</code> não importa <code>flutter/material.dart</code></label>
+    <label><input type="checkbox" data-check="m3c"> A interface não conhece o repositório — só o controlador</label>
+    <label><input type="checkbox" data-check="m3d"> O app se comporta igual ao fim do Módulo 2</label>
+    <label><input type="checkbox" data-check="m3e"> <code>flutter analyze</code> limpo e <code>flutter test</code> verde 🎉</label>
+  </div>
+
+  <h3>Quiz rápido</h3>
+  <details><summary>1. Amanhã as tarefas vêm de uma API. Quais arquivos mudam?</summary>
+    <p>Só a camada <code>data/</code> (um novo repositório) e onde ele é criado. Interface e modelo intactos.</p></details>
+  <details><summary>2. O <code>TaskTile</code> pode chamar o controlador direto?</summary>
+    <p>Não — widget “burro” recebe dados e callbacks. Quem conhece o controlador é a página. E “burro” aqui é elogio!</p></details>
+  <details><summary>3. Organizar por tipo ou por funcionalidade?</summary>
+    <p>Começamos por camadas para aprender os limites. Em projeto real: <strong>funcionalidade primeiro</strong>
+      (<code>features/tasks/widgets/…</code>) — a árvore alvo já faz isso.</p></details>
+</section>
+
+<!-- ============ PRÓXIMOS PASSOS ============ -->
+<section id="proximos-passos">
+  <h2>Próximos passos 🚀</h2>
+  <table>
+    <tr><th>Passo</th><th>O que aprender</th><th>Por que agora</th></tr>
+    <tr><td>1</td><td><strong>Persistência</strong> com <code>SharedPreferences</code></td><td>Só a camada <code>data/</code> muda — você já tem a arquitetura</td></tr>
+    <tr><td>2</td><td><strong>Navegação</strong> (<code>Navigator.push</code>)</td><td>Tela de detalhe da tarefa</td></tr>
+    <tr><td>3</td><td><strong>Estado em escala</strong>: Provider ou Riverpod</td><td>Quando houver mais de um controlador</td></tr>
+    <tr><td>4</td><td><strong>Publicar</strong>: assinatura e lojas</td><td>Team no Xcode (iOS/macOS) e keystore (Android)</td></tr>
+  </table>
+  <h3>Para continuar estudando</h3>
+  <ul>
+    <li><a href="https://docs.flutter.dev/get-started/codelab" target="_blank" rel="noopener">Primeiro app em Flutter — codelab oficial</a></li>
+    <li><a href="https://dart.dev/language" target="_blank" rel="noopener">Linguagem Dart — guia oficial</a></li>
+    <li><a href="https://docs.flutter.dev" target="_blank" rel="noopener">Documentação do Flutter</a></li>
+  </ul>
+  <div class="dica"><strong>Desafio para casa:</strong> faça as tarefas sobreviverem ao fechar o app.
+    Dica: crie um repositório novo com <code>SharedPreferences</code> e troque só a criação dele na tela.
+    Se a sua arquitetura do Módulo 3 estiver certa, nenhum widget muda. 💪</div>
+</section>
+
+</main>
+
+<footer>
+  Treinamento Flutter para Iniciantes · App Minhas Tarefas · Material em português<br>
+  Projeto starter e gabarito acompanham este material — rode em iOS, Android, Web e macOS.
+</footer>
+
+<script>
+  // Botão "Copiar" em cada bloco de código
+  document.querySelectorAll('.bloco').forEach(function(bloco){
+    var botao = document.createElement('button');
+    botao.className = 'copiar'; botao.textContent = 'Copiar'; botao.type = 'button';
+    botao.addEventListener('click', function(){
+      var texto = bloco.querySelector('code').innerText;
+      navigator.clipboard.writeText(texto).then(function(){
+        botao.textContent = 'Copiado ✓';
+        setTimeout(function(){ botao.textContent = 'Copiar'; }, 1800);
+      });
+    });
+    bloco.appendChild(botao);
+  });
+  // Checklists com progresso salvo no navegador
+  document.querySelectorAll('[data-check]').forEach(function(caixa){
+    var chave = 'flutter-treinamento-' + caixa.dataset.check;
+    caixa.checked = localStorage.getItem(chave) === '1';
+    caixa.addEventListener('change', function(){
+      localStorage.setItem(chave, caixa.checked ? '1' : '0');
+    });
+  });
+</script>
+</body>
+</html>
