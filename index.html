@@ -128,6 +128,9 @@
     <tr><td>20 min</td><td>Desafio final, testes e próximos passos</td></tr>
   </table>
   <p class="progresso">Os checklists desta página salvam seu progresso no navegador — pode fechar e voltar depois.</p>
+  <p><strong>Como usar como base de estudo:</strong> em cada módulo, leia o conceito → rode a prática → releia a
+     <em>Base de estudo</em> → faça os exercícios de fixação dos arquivos completos dos módulos (que acompanham o projeto)
+     → feche com o resumo de 2 minutos. Sem pressa: cada módulo foi escrito para ser relido depois do treinamento.</p>
   <p class="progresso">🗣️ <strong>Convenção de linguagem:</strong> todo o conteúdo em português (Brasil).
     Termos técnicos reservados ficam em inglês, sem tradução — classes, widgets, methods, comandos,
     packages, pastas (<code>models</code>, <code>data</code>, <code>state</code>, <code>features</code>) e conceitos
@@ -222,6 +225,19 @@ class Task {
 }</code></pre></div>
   <div class="dica"><strong>Travou em widget/layout?</strong> Consulte o material de apoio de Widgets e Layout
     que acompanha o treinamento. E lembre: <code>dumb widget</code> (só dados + callbacks) é elogio, não insulto! 😉</div>
+
+  <h3>Base de estudo — o que cada camada pode fazer</h3>
+  <table>
+    <tr><th>Camada</th><th>Responsabilidade</th><th>Não pode</th></tr>
+    <tr><td><code>models/</code></td><td>Conceitos do domínio, em Dart puro</td><td>Importar Flutter, rede ou UI</td></tr>
+    <tr><td><code>data/</code></td><td>Obter/gravar dados (a fonte)</td><td>Conhecer widgets ou regras de tela</td></tr>
+    <tr><td><code>state/</code></td><td>State da feature e suas mudanças</td><td>Detalhes visuais</td></tr>
+    <tr><td><code>features/</code></td><td>Desenhar e capturar interação</td><td>Chamar API ou storage direto</td></tr>
+  </table>
+  <p><strong>Conceitos para dominar:</strong> separação de responsabilidades · baixo acoplamento e alta coesão ·
+     dependência injetada no construtor · fonte única de verdade (<em>single source of truth</em>).
+     Antes de criar um arquivo, pergunte: <em>o que é? de onde vem? o que acontece? como aparece?</em> — a resposta diz a pasta.
+     Anti-patterns: <code>main.dart</code> gigante, <code>build()</code> chamando API, model importando <code>material.dart</code>.</p>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 1</h3>
@@ -329,6 +345,18 @@ Switch(
   ),
 ),</code></pre></div>
 
+  <h3>Base de estudo — para dominar este módulo</h3>
+  <p><strong>Frame e rebuild:</strong> <code>setState(fn)</code> executa <code>fn</code>, marca o <code>Element</code> como <em>dirty</em>
+     e agenda o <code>build()</code> no próximo frame — por isso <code>build()</code> deve ser puro e rápido, sem <code>side effects</code>.</p>
+  <p><strong>Escopo:</strong> <code>setState</code> reconstrói o widget e os filhos; <code>ListenableBuilder</code> reconstrói só o trecho envolvido.
+     Empurre a escuta para perto de quem usa o dado e use <code>const</code> no que não muda.</p>
+  <p><strong><em>Lifting state up</em>:</strong> se o pai precisa reagir ao filho, o state sobe — o pai guarda o valor e entrega
+     <strong>valor + callback</strong> a um filho <code>Stateless</code> (é o desenho do <code>TaskTile</code>).</p>
+  <p><strong>Controller bem feito:</strong> dependência injetada no construtor · getters derivados (nunca copie o dado) ·
+     <code>methods</code> com nome de intenção (<code>toggleTask</code>) · um <code>notifyListeners()</code> por operação · quem cria, faz <code>dispose()</code>.</p>
+  <p><strong>Armadilhas clássicas:</strong> <code>setState</code> com função <code>async</code> · usar a tela depois de um <code>await</code> sem checar <code>mounted</code> ·
+     chamar <code>setState</code> durante o <code>build()</code> · itens de lista com state e sem <code>Key</code>.</p>
+
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 2</h3>
     <label><input type="checkbox" data-check="m2a"> O botão <code>+</code> adiciona e a tarefa aparece na hora, sem reiniciar</label>
@@ -425,6 +453,18 @@ if (_controller.errorMessage != null &amp;&amp; _controller.tasks.isEmpty) {
 }
 if (_controller.tasks.isEmpty) return const EmptyState();
 return /* a mesma lista do Módulo 2 */;                       // success</code></pre></div>
+
+  <h3>Base de estudo — async sem mistério</h3>
+  <p><strong><code>Future</code> tem 3 destinos:</strong> <em>uncompleted</em> (é o <code>loading</code>), <em>completed with value</em>
+     (<code>success</code>) e <em>completed with error</em> (<code>error</code>). <code>await</code> suspende só aquela função —
+     a UI segue viva no <em>event loop</em>. Todo <code>await</code> precisa de <code>try/catch</code>, e o <code>finally</code> é quem desliga o <code>loading</code>.</p>
+  <p><strong>HTTP:</strong> <code>http.get</code> não lança exceção em 404/500 — quem confere o <code>statusCode</code> é você.
+     Na Web, a API precisa de <strong>CORS</strong> liberado. Nada de token embutido no app: o que vai no binário pode ser lido.</p>
+  <p><strong>JSON:</strong> o <code>body</code> é texto; <code>jsonDecode</code> + <code>Task.fromJson</code> transformam em model tipado.
+     Campo que pode faltar ganha valor padrão — mudança de formato quebra no model, não em dez widgets.</p>
+  <p><strong>Controller × <code>FutureBuilder</code>:</strong> <code>FutureBuilder</code> serve para busca pontual e local;
+     quando há regra, retry e outras ações sobre os dados, o state assíncrono vive no controller.
+     E nunca crie o <code>Future</code> dentro do <code>build()</code>: cada rebuild viraria uma busca nova.</p>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 3 (final!)</h3>
