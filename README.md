@@ -8,7 +8,7 @@ os 3 módulos com código copiável e checkpoints interativos.
 Abra o arquivo `index.html` no navegador, ou sirva a pasta (recomendado):
 
 ```bash
-cd treinamento-flutter-iniciantes
+cd treinamento-flutter
 python3 -m http.server 8080 --directory site
 # → http://localhost:8080
 ```
