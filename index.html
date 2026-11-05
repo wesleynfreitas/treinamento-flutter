@@ -97,7 +97,7 @@
 <section id="como-funciona">
   <h2>Como funciona o treinamento</h2>
   <div class="ideia"><strong>A regra do dia:</strong> primeiro o mapa, depois o movimento, depois o mundo real.
-    Arquitetura separa · estado reage · a API alimenta. E a interface é sempre uma função do estado.</div>
+    Arquitetura separa · estado reage · a API alimenta. E a UI é sempre uma função do estado.</div>
 
   <div class="grade">
     <div class="cartao-modulo">
@@ -118,7 +118,7 @@
       <span class="tempo">40 min · Sessão 2</span>
       <h3>3 · Consumo de API e Async</h3>
       <p>Dados reais com <code>Future</code> e <code>http</code>: buscar tarefas da API tratando
-         <strong>carregando, erro e sucesso</strong> — sem a interface mudar.</p>
+         <strong><code>loading</code>, <code>error</code> e <code>success</code></strong> — sem a UI mudar.</p>
       <a href="#modulo3">Ir ao módulo →</a>
     </div>
   </div>
@@ -133,6 +133,10 @@
     <tr><td>20 min</td><td>Desafio final, testes e próximos passos</td></tr>
   </table>
   <p class="progresso">Os checklists desta página salvam seu progresso no navegador — pode fechar e voltar depois.</p>
+  <p class="progresso">🗣️ <strong>Convenção de linguagem:</strong> todo o conteúdo em português (Brasil).
+    Termos técnicos reservados ficam em inglês, sem tradução — classes, widgets, methods, comandos,
+    packages, pastas (<code>models</code>, <code>data</code>, <code>state</code>, <code>features</code>) e conceitos
+    como <code>controller</code>, <code>repository</code>, <code>UI</code> e <code>loading</code>/<code>error</code>/<code>success</code>.</p>
 </section>
 
 <!-- ============ SETUP ============ -->
@@ -200,7 +204,7 @@ flutter pub get     # dentro da pasta projeto-starter</code></pre></div>
   features/tasks/
     tasks_page.dart                # a tela
     widgets/
-      task_tile.dart               # widget "burro": dados + callbacks
+      task_tile.dart               # dumb widget: dados + callbacks
       empty_state.dart</code></pre></div>
 
   <h3>Prática — organização em 4 passos seguros</h3>
@@ -222,23 +226,23 @@ class Task {
       Task(id: id, title: title ?? this.title, done: done ?? this.done);
 }</code></pre></div>
   <div class="dica"><strong>Travou em widget/layout?</strong> Consulte o material de apoio de Widgets e Layout
-    que acompanha o treinamento. E lembre: widget “burro” (só dados + callbacks) é elogio, não insulto! 😉</div>
+    que acompanha o treinamento. E lembre: <code>dumb widget</code> (só dados + callbacks) é elogio, não insulto! 😉</div>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 1</h3>
     <label><input type="checkbox" data-check="arq1"> <code>lib/main.dart</code> tem ~5 linhas e nenhuma lista de tarefas</label>
     <label><input type="checkbox" data-check="arq2"> <code>models/task.dart</code> não importa <code>flutter/material.dart</code></label>
-    <label><input type="checkbox" data-check="arq3"> A tela lê as tarefas do repository — nada fixo na interface</label>
+    <label><input type="checkbox" data-check="arq3"> A tela lê as tarefas do repository — nada fixo na UI</label>
     <label><input type="checkbox" data-check="arq4"> O app lista as 3 tarefas, igual ao starter por fora · <code>flutter analyze</code> limpo</label>
   </div>
 
   <h3>Quiz rápido</h3>
   <details><summary>1. Amanhã as tarefas vêm de uma API. Quais arquivos mudam?</summary>
-    <p>Só a camada <code>data/</code> — é o Módulo 3, e a interface nem fica sabendo.</p></details>
+    <p>Só a camada <code>data/</code> — é o Módulo 3, e a UI nem fica sabendo.</p></details>
   <details><summary>2. O <code>TaskTile</code> pode buscar dados no repository?</summary>
-    <p>Não — widget “burro” recebe dados e callbacks. Quem conhece a fonte é a página (e, no Módulo 2, o controlador).</p></details>
+    <p>Não — <code>dumb widget</code> recebe dados e callbacks. Quem conhece a fonte é a página (e, no Módulo 2, o controller).</p></details>
   <details><summary>3. Por que <code>models/</code> não importa Flutter?</summary>
-    <p>Model é conceito do domínio: sem Flutter ele é testável, reutilizável e não quebra quando a interface muda.</p></details>
+    <p>Model é conceito do domínio: sem Flutter ele é testável, reutilizável e não quebra quando a UI muda.</p></details>
 </section>
 
 <!-- ============ MÓDULO 2 ============ -->
@@ -247,10 +251,10 @@ class Task {
   <p><strong>Objetivo:</strong> fazer o app reagir — adicionar, concluir e remover tarefas — e entender <em>onde</em> o estado deve morar.<br>
      <strong>Resultado:</strong> app de tarefas <strong>funcionando</strong>, com o estado num <code>TaskController</code> fora da tela.</p>
 
-  <div class="ideia"><strong>A ideia central:</strong> interface = função do estado.
+  <div class="ideia"><strong>A ideia central:</strong> UI = função do estado.
     A única pergunta aqui é: <strong>quem é o dono do estado?</strong>
     A pasta <code>state/</code>, vazia desde o Módulo 1, ganha seu morador:
-    tela lendo a fonte direto → <code>setState</code> na tela → controlador fora da tela.</div>
+    tela lendo a fonte direto → <code>setState</code> na tela → controller fora da tela.</div>
 
   <h3>Roteiro</h3>
   <table>
@@ -263,13 +267,13 @@ class Task {
   </table>
 
   <h3>Prática 1 — <code>setState</code>, o jeito rápido (para sentir o problema)</h3>
-  <p>Na tela (<code>StatefulWidget</code>), o toque numa tarefa alterna um estado local e chama <code>setState</code>:</p>
+  <p>Na tela (<code>StatefulWidget</code>), o toque numa tarefa alterna um <code>state</code> local e chama <code>setState</code>:</p>
   <div class="bloco"><pre><code>onTap: () =&gt; setState(() =&gt; _concluidasLocalmente.add(task.id))</code></pre></div>
   <p>Funciona — mas esse estado morreu dentro da tela: contador, outra tela e testes não enxergam nada. É essa dor que a Prática 2 resolve.</p>
   <div class="ideia"><strong>Frase para gravar:</strong> “<code>setState</code> não desenha nada.
     Ele só avisa: <em>mudou — roda o <code>build()</code> de novo</em>.”</div>
 
-  <h3>Prática 2 — o controlador em <code>state/</code>, o jeito que escala</h3>
+  <h3>Prática 2 — o controller em <code>state/</code>, o jeito que escala</h3>
   <div class="bloco"><pre><code>class TaskController extends ChangeNotifier {
   TaskController(this._repository);
 
@@ -284,11 +288,11 @@ class Task {
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       title: title.trim(),
     ));
-    notifyListeners(); // <- sem isto, a interface não fica sabendo!
+    notifyListeners(); // <- sem isto, a UI não fica sabendo!
   }
   // toggleTask / removeTask: mesma ideia — muta via repository e avisa
 }</code></pre></div>
-  <p>A tela guarda o controlador, escuta com <code>ListenableBuilder</code> e só chama <em>intenções</em>:</p>
+  <p>A tela guarda o controller, escuta com <code>ListenableBuilder</code> e só chama <em>methods</em>:</p>
   <div class="bloco"><pre><code>body: ListenableBuilder(
   listenable: _controller,
   builder: (context, _) =&gt; ListView.builder(
@@ -314,12 +318,12 @@ class Task {
 
   <h3>Quiz rápido</h3>
   <details><summary>1. Esqueci o <code>notifyListeners()</code>. O que acontece?</summary>
-    <p>O dado muda, mas a interface não: o <code>build()</code> nunca roda de novo.</p></details>
+    <p>O dado muda, mas a UI não: o <code>build()</code> nunca roda de novo.</p></details>
   <details><summary>2. <code>setState</code> é errado?</summary>
     <p>Não! É o certo para estado <strong>local e passageiro</strong> (aba selecionada, campo aberto).
-      Estado da funcionalidade e dos dados vai para o controlador.</p></details>
+      Estado da funcionalidade e dos dados vai para o controller.</p></details>
   <details><summary>3. Por que <code>List.unmodifiable</code> ao expor a lista?</summary>
-    <p>Para ninguém burlar o controlador e mudar a lista sem avisar a interface.</p></details>
+    <p>Para ninguém burlar o controller e mudar a lista sem avisar a UI.</p></details>
 
   <h3>Erros comuns</h3>
   <table>
@@ -333,20 +337,20 @@ class Task {
 <!-- ============ MÓDULO 3 ============ -->
 <section id="modulo3">
   <h2>Módulo 3 · Consumo de API e Async <span class="tempo">40 min · Sessão 2</span></h2>
-  <p><strong>Objetivo:</strong> buscar as tarefas de uma API real e tratar os três estados de toda tela assíncrona: <strong>carregando, erro e sucesso</strong>.<br>
-     <strong>Resultado:</strong> tarefas vindas da internet (JSONPlaceholder), com spinner e “tentar de novo” — e a interface praticamente intacta.</p>
+  <p><strong>Objetivo:</strong> buscar as tarefas de uma API real e tratar os três <code>states</code> de todo fluxo assíncrono: <strong><code>loading</code>, <code>error</code> e <code>success</code></strong>.<br>
+     <strong>Resultado:</strong> tarefas vindas da internet (JSONPlaceholder), com spinner e “tentar de novo” — e a UI praticamente intacta.</p>
 
   <div class="ideia"><strong>A ideia central:</strong> dado que vem da rede <strong>demora e pode falhar</strong>.
-    Quem busca é <code>data/</code>; quem expõe o estado é <code>state/</code>; a interface só desenha.
+    Quem busca é <code>data/</code>; quem expõe o estado é <code>state/</code>; a UI só desenha.
     É a ordem do treinamento se pagando: arquitetura isolou a fonte, estado isolou a reação.</div>
 
   <h3>Roteiro</h3>
   <table>
     <tr><th>Tempo</th><th>Bloco</th><th>O que fazer</th></tr>
     <tr><td>0–5</td><td>O problema</td><td>Hoje a lista nasce pronta na memória. Na vida real: demora, falha, vem em JSON</td></tr>
-    <tr><td>5–12</td><td><code>Future</code> e <code>async/await</code></td><td>Valor que chega depois, sem travar a interface · <code>try/catch</code></td></tr>
+    <tr><td>5–12</td><td><code>Future</code> e <code>async/await</code></td><td>Valor que chega depois, sem travar a UI · <code>try/catch</code></td></tr>
     <tr><td>12–25</td><td><strong>Prática 1 · API em <code>data/</code></strong></td><td><code>flutter pub add http</code>, <code>Task.fromJson</code>, <code>ApiTaskRepository</code></td></tr>
-    <tr><td>25–35</td><td><strong>Prática 2 · os 3 estados</strong></td><td><code>isLoading</code>/<code>errorMessage</code> no controlador; spinner, erro ou lista na tela</td></tr>
+    <tr><td>25–35</td><td><strong>Prática 2 · os 3 <code>states</code></strong></td><td><code>isLoading</code>/<code>errorMessage</code> no controller; spinner, erro ou lista na tela</td></tr>
     <tr><td>35–40</td><td>Checkpoint + quiz</td><td>Cortar a rede e ver o erro bonito · <code>flutter analyze</code></td></tr>
   </table>
 
@@ -369,7 +373,7 @@ factory Task.fromJson(Map&lt;String, dynamic&gt; json) {
     done: json['completed'] as bool? ?? false,
   );
 }</code></pre></div>
-  <div class="bloco"><pre><code>// data/task_repository.dart — a mesma interface, outra fonte
+  <div class="bloco"><pre><code>// data/task_repository.dart — o mesmo contract, outra fonte
 class ApiTaskRepository {
   Future&lt;List&lt;Task&gt;&gt; fetchTasks() async {
     final response = await http.get(
@@ -383,7 +387,7 @@ class ApiTaskRepository {
   }
 }</code></pre></div>
 
-  <h3>Prática 2 — os 3 estados, no controlador e na tela</h3>
+  <h3>Prática 2 — os 3 <code>states</code>, no controller e na tela</h3>
   <div class="bloco"><pre><code>// state/task_controller.dart
 Future&lt;void&gt; loadTasks() async {
   isLoading = true;
@@ -400,13 +404,13 @@ Future&lt;void&gt; loadTasks() async {
 }</code></pre></div>
   <div class="bloco"><pre><code>// na tela, a ordem dos ifs É a aula:
 if (_controller.isLoading &amp;&amp; _controller.tasks.isEmpty) {
-  return const Center(child: CircularProgressIndicator()); // carregando
+  return const Center(child: CircularProgressIndicator()); // loading
 }
 if (_controller.errorMessage != null &amp;&amp; _controller.tasks.isEmpty) {
   return /* mensagem + botão "Tentar de novo" */;             // erro
 }
 if (_controller.tasks.isEmpty) return const EmptyState();
-return /* a mesma lista do Módulo 2 */;                       // sucesso</code></pre></div>
+return /* a mesma lista do Módulo 2 */;                       // success</code></pre></div>
 
   <div class="checkpoint">
     <h3>✅ Checkpoint do Módulo 3 (final!)</h3>
@@ -419,11 +423,11 @@ return /* a mesma lista do Módulo 2 */;                       // sucesso</code>
 
   <h3>Quiz rápido</h3>
   <details><summary>1. Por que não buscar a API direto no <code>build()</code>?</summary>
-    <p><code>build()</code> roda toda hora e não é lugar de efeito colateral. Busca-se uma vez e o resultado vira estado.</p></details>
+    <p><code>build()</code> roda toda hora e não é lugar de <code>side effect</code>. Busca-se uma vez e o resultado vira estado.</p></details>
   <details><summary>2. O <code>await</code> trava o app?</summary>
-    <p>Não — ele pausa <em>aquela função</em> e libera a interface. É por isso que o spinner gira.</p></details>
+    <p>Não — ele pausa <em>aquela função</em> e libera a UI. É por isso que o spinner gira.</p></details>
   <details><summary>3. Amanhã a API muda de endereço. O que muda no app?</summary>
-    <p>Só <code>data/</code>. Interface, controlador e testes nem ficam sabendo — o Módulo 1 cobrando o investimento.</p></details>
+    <p>Só <code>data/</code>. Interface, controller e testes nem ficam sabendo — o Módulo 1 cobrando o investimento.</p></details>
 
   <h3>Erros comuns</h3>
   <table>
@@ -441,8 +445,8 @@ return /* a mesma lista do Módulo 2 */;                       // sucesso</code>
     <tr><th>Passo</th><th>O que aprender</th><th>Por que agora</th></tr>
     <tr><td>1</td><td><strong>Persistência</strong> com <code>SharedPreferences</code></td><td>Só a camada <code>data/</code> muda — você já tem a arquitetura</td></tr>
     <tr><td>2</td><td><strong>Navegação e formulários</strong> (<code>Navigator.push</code>)</td><td>Tela de detalhe/edição da tarefa</td></tr>
-    <tr><td>3</td><td><strong>Testes</strong>: unidade e de widget</td><td>O controlador já é testável sem tela — inclua um repository falso</td></tr>
-    <tr><td>4</td><td><strong>Estado em escala</strong>: Provider ou Riverpod</td><td>Quando houver mais de um controlador</td></tr>
+    <tr><td>3</td><td><strong>Testes</strong>: unidade e de widget</td><td>O controller já é testável sem tela — inclua um repository falso</td></tr>
+    <tr><td>4</td><td><strong>Estado em escala</strong>: Provider ou Riverpod</td><td>Quando houver mais de um controller</td></tr>
     <tr><td>5</td><td><strong>Publicar</strong>: assinatura e lojas</td><td>Team no Xcode (iOS/macOS) e keystore (Android)</td></tr>
   </table>
   <h3>Para continuar estudando</h3>

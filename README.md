@@ -20,7 +20,7 @@ Servindo a partir da raiz do treinamento, os alunos também baixam/abrem
 
 | Opção | Como |
 |---|---|
-| **GitHub Pages** | Suba `site/` para um repositório → Settings → Pages → publicar da branch |
+| **GitHub Pages** | Suba `site/` para um repository → Settings → Pages → publicar da branch |
 | **Netlify / Vercel** | Arraste a pasta `site/` (deploy estático, sem build) |
 | **Servidor interno / wiki** | Copie `index.html` (arquivo único, CSS/JS embutidos) |
 
